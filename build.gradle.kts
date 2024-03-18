@@ -9,13 +9,6 @@ tasks.named<JavaCompile>("compileJava") {
     options.release.set(8)
 }
 
-val compileOnlyV1 by configurations.creating
-val compileOnlyV2 by configurations.creating
-
-sourceSets {
-    main.get().compileClasspath += configurations.getByName("compileOnlyV1") + configurations.getByName("compileOnlyV2")
-}
-
 val latest = "latest.integration"
 dependencies {
     implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:$latest"))
@@ -32,8 +25,7 @@ dependencies {
     compileOnly("com.google.errorprone:error_prone_core:2.19.1") {
         exclude("com.google.auto.service", "auto-service-annotations")
     }
-    compileOnlyV1("com.demo:demo:1.0")
-    compileOnlyV2("com.demo:demo:2.0")
+    implementation(fileTree(mapOf("dir" to "src/main/resources/META-INF/rewrite/classpath", "include" to listOf("*.jar"))))
 
     testImplementation("org.openrewrite.gradle.tooling:model:$latest")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
